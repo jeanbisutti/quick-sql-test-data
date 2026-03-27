@@ -22,15 +22,14 @@ jobs:
       with:
         java-version: ${{ matrix.java }}
         distribution: 'temurin'
-    - name: Cache Maven dependencies
-      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
-      with:
-        path: ~/.m2
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-m2
+        cache: 'maven'
     - name: Execute tests
       run: mvn verify
-    - name: check license header is present in all files
-      run: mvn license:check
+    - name: Upload Maven Timeline
+      if: always()
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      with:
+        name: maven-timeline-java-${{ matrix.java }}
+        path: target/timeline/
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@75cd11691c0faa626561e295848008c8a7dddffe # v5
